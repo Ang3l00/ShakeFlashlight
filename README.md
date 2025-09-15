@@ -295,14 +295,3 @@ ShakeFlashlight rispetta la privacy:
 [![GitHub watchers](https://img.shields.io/github/watchers/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/watchers)
 
 *Ultimo aggiornamento README: Settembre 2025*
-
-</div>
-
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-| Issue | Devices | Workaround |
-|-------|---------|------------|
