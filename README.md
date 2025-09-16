@@ -15,7 +15,7 @@
 - 📱 **Screen Off**: Always-on background service
 - 🎛️ **Simple Toggle**: Enable/disable the service with a tap
 - 📊 **Notification**: Quickly check the service status
-- 🔋 **Ultra-light**: Minimal battery consumption (<1%)
+- 🔋 **Ultra-light**: Minimal battery consumption (<1%/h)
 - 🔒 **Privacy first**: No network permissions, only local sensors
 - 🎯 **Optimized sensitivity**: Prevents accidental power on
 
