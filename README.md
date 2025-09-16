@@ -1,7 +1,7 @@
 
 # 🔦 ShakeFlashlight
 
-**Accendi la torcia con una semplice scossa - anche a schermo spento!**
+**Turn on the flashlight with a simple shake - even when the screen is off!**
 
 [![License: GPL v3](https://img.shields.io/badge/License-GPLv3-blue.svg)](https://www.gnu.org/licenses/gpl-3.0)
 [![Platform](https://img.shields.io/badge/Platform-Android-green.svg)](https://android.com)
@@ -9,60 +9,59 @@
 [![API](https://img.shields.io/badge/API-21%2B-brightgreen.svg)](https://android-arsenal.com/api?level=21)
 [![Release](https://img.shields.io/github/v/release/Ang3l00/ShakeFlashlight)](https://github.com/Ang3l00/ShakeFlashlight/releases)
 
-## ✨ Caratteristiche
+## ✨ Features
 
-- 🔦 **Shake to Light**: Scuoti il telefono per accendere/spegnere il LED
-- 📱 **Funziona a schermo spento**: Servizio in background sempre attivo
-- 🎛️ **Toggle semplice**: Attiva/disattiva il servizio con un tap
-- 📊 **Notifica**: Controllo rapido dello stato del servizio
-- ⚡ **Ultra leggero**: Consumi minimi di batteria
-- 🔒 **Privacy first**: Nessun permesso di rete, solo sensori locali
-- 🎯 **Sensibilità ottimizzata**: Evita accensioni accidentali
+- 🔦 **Shake to Light**: Shake your phone to turn the LED on/off
+- 📱 **Screen Off**: Always-on background service
+- 🎛️ **Simple Toggle**: Enable/disable the service with a tap
+- 📊 **Notification**: Quickly check the service status
+- 🔋 **Ultra-light**: Minimal battery consumption (<1%)
+- 🔒 **Privacy first**: No network permissions, only local sensors
+- 🎯 **Optimized sensitivity**: Prevents accidental power on
 
 ## 🚀 Download
 
-### Scarica APK
+### Download APK
 
 [<img src="https://img.shields.io/badge/Download-APK-green?style=for-the-badge&logo=android" alt="Download APK" height="60">](https://github.com/Ang3l00/ShakeFlashlight/releases/latest)
 
+*Note: The app is not available on the Google Play Store to maintain the open source philosophy*
 
-*Nota: L'app non è disponibile sul Google Play Store per mantenere la filosofia open source*
+### APK Installation
 
-### Installazione APK
+1. Enable **"Install unknown apps"** in Android settings
+2. Download the **APK** file from the releases
+3. Tap the APK file to install
+4. Grant the **permissions** required on first launch
 
-1. Abilita **"Installa app sconosciute"** nelle impostazioni Android
-2. Scarica il file **APK** dalle releases
-3. Tocca il file APK per installare
-4. Concedi i **permessi** richiesti al primo avvio
+## 🔧 How It Works
 
-## 🔧 Come Funziona
+### Initial Setup
 
-### Setup Iniziale
+1. **Open** ShakeFlashlight
+2. **Activate** the service with the main toggle
+3. **Test** by shaking your smartphone
 
-1. **Apri** ShakeFlashlight
-2. **Attiva** il servizio con il toggle principale
-3. **Testa** scuotendo lo smartphone
+### Daily Use
 
-### Utilizzo Quotidiano
+- **Quick Shake**: 2-3 movements to activate
+- **Long Shake**: Hold the shake for 1 second
+- **Tap Widget**: Tap for status/direct control
+- **App Toggle**: Temporarily disable the service
 
-- **Shake rapido**: 2-3 movimenti per attivare
-- **Shake prolungato**: Mantieni la scossa per 1 secondo
-- **Widget tap**: Tocca per stato/controllo diretto
-- **Toggle app**: Disattiva temporaneamente il servizio
+## 📲 System Requirements
 
-## 📲 Requisiti di Sistema
+- **Android 12.0** (API 31) or higher
+- **Storage**: 8MB free space
+- **Hardware**: Accelerometer + LED flashlight
+- **Battery optimization** disabled for the app
 
-- **Android 12.0** (API 31) o superiore
-- **Storage**: 8MB spazio libero
-- **Hardware**: Accelerometro + Torcia LED
-- **Battery optimization** disabilitata per l'app
-
-### Compatibilità Testata
+### Compatibility Tested
 
 - ✅ **Google Pixel** (8 series) vanilla
 - ✅ **Google Pixel** (8 series) GrapheneOS
 
-## 🔑 Permessi Richiesti
+## 🔑 Required Permissions
 
 <uses-permission android:name="android.permission.CAMERA" />
 <uses-permission android:name="android.permission.FLASHLIGHT" />
@@ -70,35 +69,35 @@
 <uses-permission android:name="android.permission.WAKE_LOCK" />
 <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
 
-### Spiegazione Permessi
+### Permissions Explained
 
-| Permesso | Utilizzo | Necessità |
+| Permission | Usage | Requirement |
 |----------|----------|-----------|
-| `CAMERA` | Accesso hardware torcia | **Essenziale** |
-| `NOTIFICHE` | Controllo LED torcia | **Essenziale** |
-| `SENSORS` | Rilevamento shake | **Essenziale** |
+| `CAMERA` | Flashlight Hardware Access | **Essential** |
+| `NOTIFICATIONS` | Flashlight LED Control | **Essential** |
+| `SENSORS` | Shake Detection | **Essential** |
 
-### Privacy e Sicurezza
+### Privacy & Security
 
-- 🔒 **Nessun permesso internet**: Zero trasmissione dati
-- 🛡️ **Nessun accesso file**: Solo controllo hardware
-- 👁️ **Open source**: Codice ispezionabile pubblicamente
-- 🔐 **Dati locali**: Tutte le impostazioni rimangono sul device
+- 🔒 **No internet permissions**: No data transmission
+- 🛡️ **No file access**: Hardware control only
+- 👁️ **Open source**: Publicly inspectable code
+- 🔐 **Local data**: All settings remain on the device
 
-## 🤝 Contribuire al Progetto
+## 🤝 Contributing to the Project
 
-Contribuzioni di ogni tipo sono **benvenute**! Ecco come partecipare:
+Contributions of all kinds are **welcome**! Here's how to participate:
 
-### Come Contribuire
+### How to Contribute
 
-1. **🍴 Fork** il repository
-2. **🌿 Crea** feature branch
-3. **💻 Sviluppa** e testa le modifiche
-4. **📝 Commit** con messaggi descrittivi
-5. **🚀 Push** della branch 
-6. **🔄 Apri** Pull Request con descrizione dettagliata
+1. **🍴 Fork** the repository
+2. **🌿 Create** feature branches
+3. **💻 Develop** and test changes
+4. **📝 Commit** with descriptive messages
+5. **🚀 Push** the branch
+6. **🔄 Open** Pull Request with detailed description
 
-### Tipi di Contribuzioni Richieste
+### Types of Contributions Requested
 
 🐛 Bug Fixes
 ✨ New Features
@@ -108,67 +107,64 @@ Contribuzioni di ogni tipo sono **benvenute**! Ecco come partecipare:
 
 ## 🐛 Bug Report & Feature Requests
 
-### Segnalazione Bug
+### Bug Report
 
-Usa il [**Bug Report Template**](https://github.com/Ang3l00/ShakeFlashlight/issues/new?template=bug_report.md) includendo:
+Use [**Bug Report Template**](https://github.com/Ang3l00/ShakeFlashlight/issues/new?template=bug_report.md) including:
 
-#### Informazioni Essenziali
+#### Essential Information
 
-- **📱 Device**: Marca, modello, Android version
-- **📊 App Version**: Versione ShakeFlashlight installata
-- **🔋 Battery**: Livello batteria e optimization settings
-- **⚙️ ROM**: Stock Android, MIUI, OneUI, ecc.
+- **📱 Device**: Brand, model, Android version
+- **📊 App Version**: ShakeFlashlight version installed
+- **🔋 Battery**: Battery level and optimization settings
+- **⚙️ ROM**: Stock Android, MIUI, OneUI, etc.
 
-#### Descrizione Problema
+#### Problem Description
 
-- **🎯 Expected behavior**: Cosa dovrebbe accadere
-- **❌ Actual behavior**: Cosa accade invece
-- **📝 Steps to reproduce**: Come riprodurre il bug
-- **📹 Media**: Screenshot, video, logs se disponibili
+- **🎯 Expected behavior**: What should happen
+- **❌ Actual behavior**: What happens instead
+- **📝 Steps to reproduce**: How to reproduce the bug
+- **📹 Media**: Screenshots, videos, logs if available
 
 #### Crash Reports
 
-
-# Per ottenere logcat
+# To get logcat
 adb logcat -s ShakeFlashlight
 
-Oppure da device:
+Or by device:
 Settings > Developer Options > Take Bug Report
 
 # Feature Requests
 
-Usa il [**Feature Request Template**](https://github.com/Ang3l00/ShakeFlashlight/issues/new?template=feature_request.md) con:
-
-- **💡 Feature description**: Descrizione chiara della funzionalità
-- **🎯 Use case**: Quando/perché sarebbe utile
-- **🔄 Alternatives**: Soluzioni alternative considerate
-- **📊 Priority**: Bassa, media, alta e motivazione
+Use [**Feature Request Template**](https://github.com/Ang3l00/ShakeFlashlight/issues/new?template=feature_request.md) with:
+- **💡 Feature description**: Clear description of the feature
+- **🎯 Use case**: When/why it would be useful
+- **🔄 Alternatives**: Alternative solutions considered
+- **📊 Priority**: Low, medium, high, and rationale
 
 ### Issue Labels
 
-| Label | Descrizione | Priorità |
-|-------|-------------|----------|
-| `bug` | Malfunzionamenti confermati | 🔥 Alta |
-| `enhancement` | Nuove funzionalità | 📈 Media |
-| `help-wanted` | Contributi esterni benvenuti | 🤝 Variabile |
-| `documentation` | Miglioramenti docs | 📚 Bassa |
-| `question` | Supporto utenti | ❓ Bassa |
-| `duplicate` | Issue già esistente | ➡️ Chiusura |
+| Label | Description | Priority |
+|-------|-----------|----------|
+| `bug` | Confirmed bugs | 🔥 High |
+| `enhancement` | New features | 📈 Medium |
+| `help-wanted` | External contributions welcome | 🤝 Variable |
+| `documentation` | Docs improvements | 📚 Low |
+| `question` | User support | ❓ Low |
+| `duplicate` | Existing issue | ➡️ Closing |
 
 ### Support & Community
+- **💬 Discussions**: [GitHub Discussions](https://github.com/Ang3l00/ShakeFlashlight/discussions)
 
-- **💬 Discussions**: [GitHub Discussions](https://github.com/Ang3l00/ShakeFlashlight/discussions) per domande generali
-
-## 🗺️ Roadmap & Sviluppi Futuri
-- [ ] 🎨 **UI refresh** con Material Design 3 completo
-- [ ] ⚙️ **Settings page** per configurazione avanzata
+## 🗺️ Roadmap & Future Developments
+- [ ] 🎨 **UI refresh** with full Material Design 3
+- [ ] ⚙️ **Settings page** for advanced configuration
 - [ ] 🌐 **Multi-language support** (EN, IT, ES, FR, DE)
-- [ ] 🔊 **Feedback vibrazione** configurabile
-- [ ] 📊 **Advanced shake sensitivity** con slider configurazione
-- [ ] ⏰ **Auto-off timer** per prevenire consumo batteria
-- [ ] 🎯 **Gesture customization** (double shake, long shake, etc.)
+- [ ] 🔊 **Vibration feedback** configurable
+- [ ] 📊 **Advanced shake sensitivity** with configuration slider
+- [ ] ⏰ **Auto timer** Weekly schedule for automatic app activation
+- [ ] 🔋 **Battery optimization** Code improvements to reduce battery impact
 
-## 🏆 Contributors & Riconoscimenti
+## 🏆 Contributors & Acknowledgements
 
 ### Core Team
 
@@ -176,70 +172,68 @@ Usa il [**Feature Request Template**](https://github.com/Ang3l00/ShakeFlashlight
 
 ### Community Contributors
 
-*La lista crescerà con i vostri contributi! Primi contributori riceveranno menzione speciale.*
+*The list will grow with your contributions! Early contributors will receive special mention.*
 
 ### Special Thanks
 
-- **🤖 Android Open Source Project** - Per le API fondamentali
-- **💎 Kotlin Team** - Per il linguaggio straordinario  
-- **📱 Material Design Team** - Per le linee guida UI/UX
-- **🔧 Android Studio Team** - Per l'ambiente di sviluppo
-- **🌍 Open Source Community** - Per l'ispirazione continua
+- **🤖 Android Open Source Project** - For the core APIs
+- **💎 Kotlin Team** - For the amazing language
+- **📱 Material Design Team** - For the UI/UX guidelines
+- **🔧 Android Studio Team** - For the development environment
+- **🌍 Open Source Community** - For constant inspiration
 
-### FAQ Comune
+### Common FAQ
 
-#### L'app non rileva lo shake
-1. ✅ Verifica servizio attivo (toggle ON)
-2. ✅ Controlla permessi app in Settings Android
-3. ✅ Disabilita battery optimization per ShakeFlashlight
-4. ✅ Testa con shake più deciso ma non eccessivo
-3. ✅ Riavvia ShakeFlashlight completamente
+#### The app doesn't detect shaking
+1. ✅ Check active service (toggle ON)
+2. ✅ Check app permissions in Android Settings
+3. ✅ Disable battery optimization for ShakeFlashlight
+4. ✅ Test with a firmer, but not excessive, shake
+3. ✅ Restart ShakeFlashlight completely
 
-#### Widget notifica non funziona
-1. ✅ Verifica servizio attivo (toggle ON)
-2. ✅ Controlla permessi app in Settings Android
-3. ✅ Disabilita battery optimization per ShakeFlashlight
-3. ✅ Riavvia ShakeFlashlight completamente
+#### Notification widget not working
+1. ✅ Check active service (toggle ON)
+2. ✅ Check App permissions in Android Settings
+3. ✅ Disable battery optimization for ShakeFlashlight
+3. ✅ Restart ShakeFlashlight completely
 
-#### Torcia non si accende
-1. ✅ Verifica hardware torcia funzionante (fotocamera app)
-2. ✅ Chiudi altre app che usano fotocamera/torcia
-3. ✅ Riavvia ShakeFlashlight completamente
+#### Flashlight won't turn on
+1. ✅ Check flashlight hardware (camera app)
+2. ✅ Close other apps that use the camera/flashlight
+3. ✅ Restart ShakeFlashlight completely
 
 ### Performance Optimization
-- ⚙️ **Disabilita** background app refresh non necessari
-- 🔋 **Whitelist** ShakeFlashlight da battery optimization
-- 📱 **Mantieni** app in memoria (non swipe-close frequent)
+- ⚙️ **Disable** unnecessary background app refreshes
+- 🔋 **Whitelist** ShakeFlashlight from battery optimization
+- 📱 **Keep** apps in memory (don't swipe-close frequently)
 
-### Problemi Noti & Workarounds
+### Known Issues & Workarounds
 
-| Problema | Dispositivi | Workaround |
+| Problem | Device | Workaround |
 |----------|-------------|------------|
 
 
 ### Getting Help
 
 1. **🔍 Search existing** [Issues](https://github.com/Ang3l00/ShakeFlashlight/issues)
-2. **📋 Use templates** per bug report o feature request
-4. **📱 Specify device** model e Android version
+2. **📋 Use templates** for bug report o feature request
+4. **📱 Specify device** model and Android version
 
 ## 📄 Licenza & Legal
 
-### GNU General Public License v3.0
+### GNU General Public License v3.0 **GPL 3.0**
 
-Questo progetto è rilasciato sotto **GPL 3.0**, che garantisce:
+#### ✅ User Rights
+- **🆓 Free use** for any purpose
+- **📖 Study** of the source code
+- **🔄 Distribution** of copies
+- **⚡ Modification** and improvement
 
-#### ✅ Diritti Utenti
-- **🆓 Uso libero** per qualsiasi scopo
-- **📖 Studio** del codice sorgente
-- **🔄 Distribuzione** di copie
-- **⚡ Modifica** e miglioramento
-
-#### 📋 Obblighi Sviluppatori
-- **📂 Codice sorgente** sempre disponibile
-- **©️ Mantenere copyright** e licenza originali
-- **🔄 Derivati GPL** devono rimanere GPL
-- **📝 Documentare modifiche** significative
+#### 📋 Developer Obligations
+- **📂 Source code** always available
+- **©️ Maintain original copyright** and license
+- **🔄 GPL derivatives** must remain GPL
+- **📝 Document significant changes**
 
 ### Copyright Notice
 
@@ -261,24 +255,24 @@ along with this program. If not, see <https://www.gnu.org/licenses/>.
 
 ### Third-Party Licenses
 
-Questo progetto utilizza:
+This project use:
 
 - **Android SDK**: Apache License 2.0
 - **Kotlin**: Apache License 2.0  
 - **Material Design Icons**: Apache License 2.0
 - **AndroidX Libraries**: Apache License 2.0
 
-Tutte compatibili con GPL 3.0.
+All compatible with GPL 3.0.
 
 ### Privacy Policy
 
-ShakeFlashlight rispetta la privacy:
+ShakeFlashlight respects your privacy:
 
-- ❌ **Nessuna raccolta dati** personali
-- ❌ **Nessuna trasmissione** di informazioni
-- ❌ **Nessun tracking** o analytics
-- ✅ **Solo dati locali** (preferenze sul device)
-- ✅ **Codice trasparente** e ispezionabile
+- ❌ **No personal data** collection
+- ❌ **No information transmission**
+- ❌ **No tracking** or analytics
+- ✅ **Local data only** (device preferences)
+- ✅ **Transparent and inspectable code**
 
 ---
 
@@ -286,12 +280,12 @@ ShakeFlashlight rispetta la privacy:
 
 ## 🌟 **Made with ❤️ for the Android Community**
 
-### 🚀 Se ShakeFlashlight ti è utile, lascia una ⭐ stella!
+### 🚀 If ShakeFlashlight is useful to you, please leave a ⭐ star!
 
-#### 📢 Condividi con altri sviluppatori e utenti Android
+#### 📢 Share with other Android developers and users
 
 [![GitHub stars](https://img.shields.io/github/stars/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/stargazers)
 [![GitHub forks](https://img.shields.io/github/forks/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/network)
 [![GitHub watchers](https://img.shields.io/github/watchers/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/watchers)
 
-*Ultimo aggiornamento README: Settembre 2025*
+*Last README update: September 2025*
