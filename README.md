@@ -52,7 +52,6 @@
 ## 📲 System Requirements
 
 - **Android 12.0** (API 31) or higher
-- **Storage**: 8MB free space
 - **Hardware**: Accelerometer + LED flashlight
 - **Battery optimization** disabled for the app
 
@@ -125,9 +124,7 @@ Use [**Bug Report Template**](https://github.com/Ang3l00/ShakeFlashlight/issues/
 - **📝 Steps to reproduce**: How to reproduce the bug
 - **📹 Media**: Screenshots, videos, logs if available
 
-#### Crash Reports
-
-# To get logcat
+# Crash Reports - To get logcat
 adb logcat -s ShakeFlashlight
 
 Or by device:
