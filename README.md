@@ -279,4 +279,4 @@ ShakeFlashlight respects your privacy:
 [![GitHub forks](https://img.shields.io/github/forks/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/network)
 [![GitHub watchers](https://img.shields.io/github/watchers/Ang3l00/ShakeFlashlight?style=social)](https://github.com/Ang3l00/ShakeFlashlight/watchers)
 
-*Last README update: September 2025*
+*Last README update: June 2026*
