@@ -8,8 +8,8 @@ import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.hardware.camera2.CameraAccessException
+import android.hardware.camera2.CameraCharacteristics
 import android.hardware.camera2.CameraManager
-import android.os.Build
 import android.os.IBinder
 import android.os.PowerManager
 import android.os.VibrationEffect
@@ -17,13 +17,22 @@ import android.os.Vibrator
 import android.os.VibratorManager
 import android.util.Log
 import androidx.core.app.NotificationCompat
+/*
+Design comment:
+- Problem solved: UI state, notification text and real torch status could diverge.
+- Main idea: this foreground service is the single source of truth and publishes every state transition.
+- Alternatives rejected:
+  1) Binding Activity <-> Service with callbacks: more plumbing for a small app.
+  2) Polling camera state from UI: wasted cycles and worse battery profile.
+*/
 
 class ShakeDetectorService : Service(), ShakeDetector.OnShakeListener {
 
     companion object {
         private const val TAG = "ShakeDetectorService"
-        private const val NOTIFICATION_ID = 1
-        private const val CHANNEL_ID = "shake_detector_channel"
+        private const val WAKE_LOCK_TAG = "$TAG::WakeLock"
+
+        @Volatile
         var isServiceRunning = false
             private set
     }
@@ -31,35 +40,28 @@ class ShakeDetectorService : Service(), ShakeDetector.OnShakeListener {
     private lateinit var shakeDetector: ShakeDetector
     private lateinit var cameraManager: CameraManager
     private lateinit var vibrator: Vibrator
-    private var cameraId: String? = null
+    private var flashCameraId: String? = null
     private var isFlashOn = false
     private var wakeLock: PowerManager.WakeLock? = null
+    private var isTorchCallbackRegistered = false
 
-    // NUOVO - TorchCallback per monitorare stato flash
     private val torchCallback = object : CameraManager.TorchCallback() {
         override fun onTorchModeChanged(cameraId: String, enabled: Boolean) {
-            super.onTorchModeChanged(cameraId, enabled)
+            if (cameraId != flashCameraId) return
+            if (enabled == isFlashOn) return
 
-            // Solo se riguarda la nostra camera con flash
-            if (cameraId == this@ShakeDetectorService.cameraId) {
-                Log.d(TAG, "Stato torcia cambiato esternamente: $enabled")
-
-                // Aggiorna solo se diverso dal nostro stato interno
-                if (enabled != isFlashOn) {
-                    isFlashOn = enabled
-                    updateNotificationAndApp()
-                }
-            }
+            isFlashOn = enabled
+            publishFlashState()
+            updateForegroundNotification()
+            Log.d(TAG, "Flash aggiornato da app esterna: $enabled")
         }
 
         override fun onTorchModeUnavailable(cameraId: String) {
-            super.onTorchModeUnavailable(cameraId)
-            Log.d(TAG, "Torcia non disponibile: $cameraId")
-
-            if (cameraId == this@ShakeDetectorService.cameraId && isFlashOn) {
-                isFlashOn = false
-                updateNotificationAndApp()
-            }
+            if (cameraId != flashCameraId || !isFlashOn) return
+            isFlashOn = false
+            publishFlashState()
+            updateForegroundNotification()
+            Log.d(TAG, "Flash non disponibile: $cameraId")
         }
     }
 
@@ -68,141 +70,182 @@ class ShakeDetectorService : Service(), ShakeDetector.OnShakeListener {
 
         shakeDetector = ShakeDetector(this)
         cameraManager = getSystemService(Context.CAMERA_SERVICE) as CameraManager
-
-        // Solo Android 12+ - Codice semplificato
-        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
-        vibrator = vibratorManager.defaultVibrator
-
-        // Ottieni l'ID della fotocamera posteriore
-        try {
-            val cameraIds = cameraManager.cameraIdList
-            for (id in cameraIds) {
-                val characteristics = cameraManager.getCameraCharacteristics(id)
-                val hasFlash = characteristics.get(android.hardware.camera2.CameraCharacteristics.FLASH_INFO_AVAILABLE)
-                if (hasFlash == true) {
-                    cameraId = id
-                    break
-                }
-            }
-        } catch (e: Exception) {
-            Log.e(TAG, "Errore nell'ottenere l'ID della fotocamera", e)
-        }
-
-        // Crea il canale di notifica
-        createNotificationChannel()
-
-        // NUOVO - Registra TorchCallback per monitoraggio
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraManager.registerTorchCallback(torchCallback, null)
-            Log.d(TAG, "TorchCallback registrato")
-        }
-
-        // Acquisisce wake lock per mantenere attivi i sensori
-        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
-        wakeLock = powerManager.newWakeLock(
-            PowerManager.PARTIAL_WAKE_LOCK,
-            "$TAG::WakeLock"
+        vibrator = getDefaultVibrator()
+        flashCameraId = findFlashCameraId()
+        applySensitivity(
+            sensitivityPercent = ShakeSensitivitySettings.readSensitivityPercent(this),
+            persist = false
         )
-        wakeLock?.acquire()
 
-        Log.d(TAG, "Servizio creato")
+        createNotificationChannel()
+        registerTorchCallback()
     }
 
-    // NUOVO - Metodo per aggiornamento sincronizzato
-    private fun updateNotificationAndApp() {
-        // Aggiorna notifica
-        val notification = createNotification()
-        val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-        notificationManager.notify(NOTIFICATION_ID, notification)
-
-        // Informa l'Activity
-        val intent = Intent("com.example.shakeflashlight.FLASH_STATUS")
-        intent.putExtra("isFlashOn", isFlashOn)
-        sendBroadcast(intent)
-
-        Log.d(TAG, "Stato sincronizzato: Flash ${if (isFlashOn) "ACCESO" else "SPENTO"}")
-    }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
-        // Avvia la notifica foreground
-        startForeground(NOTIFICATION_ID, createNotification())
+        return when (intent?.action) {
+            AppContract.ACTION_STOP_SERVICE -> {
+                // Why: explicit stop action guarantees graceful cleanup before process teardown.
+                stopSelf()
+                START_NOT_STICKY
+            }
 
-        // Avvia il rilevamento dell'agitazione
-        shakeDetector.start(this)
-        isServiceRunning = true
+            AppContract.ACTION_TOGGLE_FLASH -> {
+                ensureServiceStarted()
+                toggleFlash(trigger = "notification")
+                START_STICKY
+            }
 
-        Log.d(TAG, "Servizio avviato")
-        return START_STICKY
+            AppContract.ACTION_UPDATE_SENSITIVITY -> {
+                val updatedSensitivity = intent.getFloatExtra(
+                    AppContract.EXTRA_SENSITIVITY_PERCENT,
+                    ShakeSensitivitySettings.DEFAULT_SENSITIVITY_PERCENT
+                )
+                applySensitivity(updatedSensitivity, persist = true)
+                if (isServiceRunning) {
+                    START_STICKY
+                } else {
+                    stopSelf()
+                    START_NOT_STICKY
+                }
+            }
+
+            else -> {
+                ensureServiceStarted()
+                START_STICKY
+            }
+        }
     }
 
     override fun onDestroy() {
-        super.onDestroy()
+        stopShakeDetection()
+        turnOffFlashIfNeeded()
+        unregisterTorchCallback()
+        releaseWakeLock()
 
-        // Ferma il rilevamento
-        shakeDetector.stop()
         isServiceRunning = false
-
-        // NUOVO - Deregistra TorchCallback
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            cameraManager.unregisterTorchCallback(torchCallback)
-            Log.d(TAG, "TorchCallback deregistrato")
-        }
-
-        // Spegne il flash se acceso
-        if (isFlashOn) {
-            toggleFlash()
-        }
-
-        // Rilascia il wake lock
-        wakeLock?.release()
-
-        Log.d(TAG, "Servizio distrutto")
+        publishServiceState()
+        publishFlashState()
+        stopForeground(STOP_FOREGROUND_REMOVE)
+        super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
 
     override fun onShake() {
-        // Callback chiamata quando viene rilevata un'agitazione
-        toggleFlash()
-
-        // Vibrazione semplificata - solo Android 12+
-        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
-
-        Log.d(TAG, "Agitazione rilevata - Flash ${if (isFlashOn) "acceso" else "spento"}")
+        toggleFlash(trigger = "shake")
+        vibrateFeedback()
     }
 
-    private fun toggleFlash() {
-        cameraId?.let { id ->
-            try {
-                cameraManager.setTorchMode(id, !isFlashOn)
-                isFlashOn = !isFlashOn
+    private fun ensureServiceStarted() {
+        if (isServiceRunning) {
+            updateForegroundNotification()
+            return
+        }
 
-                val intent = Intent("com.example.shakeflashlight.FLASH_STATUS")
-                intent.putExtra("isFlashOn", isFlashOn)
-                sendBroadcast(intent)
+        if (flashCameraId == null) {
+            Log.e(TAG, "Nessuna fotocamera con flash disponibile.")
+            stopSelf()
+            return
+        }
 
-                // Aggiorna la notifica
-                val notification = createNotification()
-                val notificationManager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
-                notificationManager.notify(NOTIFICATION_ID, notification)
+        startForeground(AppContract.NOTIFICATION_ID, buildNotification())
+        shakeDetector.start(this)
+        acquireWakeLock()
 
-                Log.d(TAG, "Flash ${if (isFlashOn) "acceso" else "spento"} dalla nostra app")
+        isServiceRunning = true
+        publishServiceState()
+        publishFlashState()
+        Log.d(TAG, "Servizio avviato")
+    }
 
-            } catch (e: CameraAccessException) {
-                Log.w(TAG, "Flash occupato da altra app", e)
-            } catch (e: Exception) {
-                Log.e(TAG, "Errore nel controllo del flash", e)
+    private fun applySensitivity(sensitivityPercent: Float, persist: Boolean) {
+        val safeValue = ShakeSensitivitySettings.clampSensitivityPercent(sensitivityPercent)
+        shakeDetector.setSensitivityPercent(safeValue)
+        if (persist) {
+            ShakeSensitivitySettings.saveSensitivityPercent(this, safeValue)
+        }
+        Log.d(TAG, "Sensibilità applicata: $safeValue%")
+    }
+
+    private fun stopShakeDetection() {
+        shakeDetector.stop()
+    }
+
+    private fun toggleFlash(trigger: String) {
+        val cameraId = flashCameraId ?: return
+        val nextState = !isFlashOn
+
+        if (!setFlashState(cameraId, nextState)) return
+
+        isFlashOn = nextState
+        publishFlashState()
+        updateForegroundNotification()
+        Log.d(TAG, "Flash ${if (isFlashOn) "acceso" else "spento"} da $trigger")
+    }
+
+    private fun turnOffFlashIfNeeded() {
+        val cameraId = flashCameraId ?: return
+        if (!isFlashOn) return
+        if (!setFlashState(cameraId, enabled = false)) return
+        isFlashOn = false
+    }
+
+    private fun setFlashState(cameraId: String, enabled: Boolean): Boolean {
+        return try {
+            cameraManager.setTorchMode(cameraId, enabled)
+            true
+        } catch (securityException: SecurityException) {
+            Log.e(TAG, "Permesso camera mancante.", securityException)
+            false
+        } catch (cameraException: CameraAccessException) {
+            Log.w(TAG, "Flash non disponibile (occupato da altra app).", cameraException)
+            false
+        } catch (error: Exception) {
+            Log.e(TAG, "Errore imprevisto nel controllo flash.", error)
+            false
+        }
+    }
+
+    private fun findFlashCameraId(): String? {
+        return try {
+            cameraManager.cameraIdList.firstOrNull { id ->
+                val characteristics = cameraManager.getCameraCharacteristics(id)
+                characteristics.get(CameraCharacteristics.FLASH_INFO_AVAILABLE) == true
             }
+        } catch (error: Exception) {
+            Log.e(TAG, "Errore nel rilevare la fotocamera con flash.", error)
+            null
+        }
+    }
+
+    private fun registerTorchCallback() {
+        if (isTorchCallbackRegistered) return
+        try {
+            cameraManager.registerTorchCallback(torchCallback, null)
+            isTorchCallbackRegistered = true
+        } catch (error: Exception) {
+            Log.e(TAG, "Impossibile registrare TorchCallback.", error)
+        }
+    }
+
+    private fun unregisterTorchCallback() {
+        if (!isTorchCallbackRegistered) return
+        try {
+            cameraManager.unregisterTorchCallback(torchCallback)
+            isTorchCallbackRegistered = false
+        } catch (error: Exception) {
+            Log.e(TAG, "Impossibile deregistrare TorchCallback.", error)
         }
     }
 
     private fun createNotificationChannel() {
         val channel = NotificationChannel(
-            CHANNEL_ID,
-            "Shake Detector Service",
+            AppContract.NOTIFICATION_CHANNEL_ID,
+            getString(R.string.notification_channel_name),
             NotificationManager.IMPORTANCE_LOW
         ).apply {
-            description = "Servizio per rilevare l'agitazione del dispositivo"
+            description = getString(R.string.notification_channel_description)
             setShowBadge(false)
         }
 
@@ -210,20 +253,98 @@ class ShakeDetectorService : Service(), ShakeDetector.OnShakeListener {
         notificationManager.createNotificationChannel(channel)
     }
 
-    private fun createNotification(): Notification {
-        val intent = Intent(this, MainActivity::class.java)
-        val pendingIntent = PendingIntent.getActivity(
-            this, 0, intent,
-            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+    private fun buildNotification(): Notification {
+        val flashStateText = getString(
+            if (isFlashOn) R.string.notification_flash_on else R.string.notification_flash_off
         )
 
-        return NotificationCompat.Builder(this, CHANNEL_ID)
-            .setContentTitle("Shake Flashlight")
-            .setContentText("Flash: ${if (isFlashOn) "ACCESO" else "SPENTO"} - Agita per cambiare")
+        return NotificationCompat.Builder(this, AppContract.NOTIFICATION_CHANNEL_ID)
+            .setContentTitle(getString(R.string.notification_title))
+            .setContentText(getString(R.string.notification_body, flashStateText))
             .setSmallIcon(android.R.drawable.ic_menu_camera)
-            .setContentIntent(pendingIntent)
+            .setContentIntent(buildOpenAppPendingIntent())
+            .addAction(
+                0,
+                getString(R.string.notification_action_toggle_flash),
+                buildServicePendingIntent(AppContract.ACTION_TOGGLE_FLASH, requestCode = 11)
+            )
+            .addAction(
+                0,
+                getString(R.string.notification_action_stop_service),
+                buildServicePendingIntent(AppContract.ACTION_STOP_SERVICE, requestCode = 12)
+            )
             .setOngoing(true)
             .setSilent(true)
             .build()
+    }
+
+    private fun buildOpenAppPendingIntent(): PendingIntent {
+        val openAppIntent = Intent(this, MainActivity::class.java)
+        return PendingIntent.getActivity(
+            this,
+            10,
+            openAppIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun buildServicePendingIntent(action: String, requestCode: Int): PendingIntent {
+        val serviceIntent = Intent(this, ShakeDetectorService::class.java).apply {
+            this.action = action
+        }
+        return PendingIntent.getService(
+            this,
+            requestCode,
+            serviceIntent,
+            PendingIntent.FLAG_UPDATE_CURRENT or PendingIntent.FLAG_IMMUTABLE
+        )
+    }
+
+    private fun updateForegroundNotification() {
+        val manager = getSystemService(Context.NOTIFICATION_SERVICE) as NotificationManager
+        manager.notify(AppContract.NOTIFICATION_ID, buildNotification())
+    }
+
+    private fun publishServiceState() {
+        val stateIntent = Intent(AppContract.ACTION_SERVICE_STATE_CHANGED).apply {
+            setPackage(packageName)
+            putExtra(AppContract.EXTRA_IS_SERVICE_RUNNING, isServiceRunning)
+        }
+        sendBroadcast(stateIntent)
+    }
+
+    private fun publishFlashState() {
+        val flashIntent = Intent(AppContract.ACTION_FLASH_STATE_CHANGED).apply {
+            setPackage(packageName)
+            putExtra(AppContract.EXTRA_IS_FLASH_ON, isFlashOn)
+        }
+        sendBroadcast(flashIntent)
+    }
+
+    private fun getDefaultVibrator(): Vibrator {
+        val vibratorManager = getSystemService(Context.VIBRATOR_MANAGER_SERVICE) as VibratorManager
+        return vibratorManager.defaultVibrator
+    }
+
+    private fun vibrateFeedback() {
+        vibrator.vibrate(VibrationEffect.createOneShot(200, VibrationEffect.DEFAULT_AMPLITUDE))
+    }
+
+    private fun acquireWakeLock() {
+        if (wakeLock?.isHeld == true) return
+
+        val powerManager = getSystemService(Context.POWER_SERVICE) as PowerManager
+        wakeLock = powerManager.newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, WAKE_LOCK_TAG).apply {
+            setReferenceCounted(false)
+            acquire()
+        }
+    }
+
+    private fun releaseWakeLock() {
+        val currentWakeLock = wakeLock ?: return
+        if (currentWakeLock.isHeld) {
+            currentWakeLock.release()
+        }
+        wakeLock = null
     }
 }

@@ -5,205 +5,575 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/design_default_color_background"
+    android:background="?attr/colorSurface"
     tools:context=".MainActivity">
 
-    <!-- Toolbar -->
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/toolbar"
+        style="@style/Widget.ShakeFlashlight.TopAppBar"
         android:layout_width="0dp"
-        android:layout_height="?attr/actionBarSize"
-        android:background="?attr/colorPrimary"
-        app:title="Shake Flashlight"
-        app:titleTextColor="?attr/colorOnPrimary"
+        android:layout_height="wrap_content"
+        android:paddingStart="@dimen/space_md"
+        android:paddingEnd="@dimen/space_md"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        app:subtitleTextColor="?attr/colorOnSurfaceVariant"
+        app:title="@string/app_name"
+        app:titleCentered="false"
+        app:titleTextColor="?attr/colorOnSurface" />
 
-    <ScrollView
+    <com.google.android.material.divider.MaterialDivider
+        android:id="@+id/topDivider"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:dividerInsetEnd="@dimen/space_md"
+        app:dividerInsetStart="@dimen/space_md"
+        app:dividerThickness="1dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/toolbar" />
+
+    <androidx.core.widget.NestedScrollView
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:clipToPadding="false"
         android:fillViewport="true"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/toolbar">
+        app:layout_constraintTop_toBottomOf="@id/topDivider">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:paddingStart="@dimen/space_md"
+            android:paddingTop="@dimen/space_lg"
+            android:paddingEnd="@dimen/space_md"
+            android:paddingBottom="@dimen/space_lg">
 
-            <!-- Card principale di controllo -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Elevated"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="4dp"
-                style="@style/Widget.Material3.CardView.Elevated">
+                android:layout_marginBottom="@dimen/space_md">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="20dp">
+                    android:padding="@dimen/space_md">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Controllo Servizio"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:text="@string/control_card_title"
                         android:textAppearance="?attr/textAppearanceHeadlineSmall"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="8dp" />
+                        android:textColor="?attr/colorOnSurface" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Attiva il servizio per iniziare a rilevare l'agitazione del dispositivo"
+                        android:layout_marginBottom="@dimen/space_md"
+                        android:text="@string/control_card_description"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:layout_marginBottom="16dp" />
+                        android:textColor="?attr/colorOnSurfaceVariant" />
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:orientation="horizontal"
-                        android:gravity="center_vertical">
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                        <TextView
+                        <com.google.android.material.textview.MaterialTextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="1"
-                            android:text="Abilita servizio"
-                            android:textAppearance="?attr/textAppearanceBodyLarge"
+                            android:text="@string/enable_service_label"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
                             android:textColor="?attr/colorOnSurface" />
 
                         <com.google.android.material.materialswitch.MaterialSwitch
                             android:id="@+id/switchService"
                             android:layout_width="wrap_content"
-                            android:layout_height="wrap_content" />
-
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/space_md"
+                            android:contentDescription="@string/service_switch_content_description" />
                     </LinearLayout>
 
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textServiceAutomationHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:text="@string/service_automation_hint"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        android:visibility="gone" />
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card stato servizio -->
             <com.google.android.material.card.MaterialCardView
-                android:id="@+id/cardServiceStatus"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                style="@style/Widget.Material3.CardView.Filled">
+                android:layout_marginBottom="@dimen/space_md">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/space_md">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Stato del Servizio"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:text="@string/sensitivity_title"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="8dp" />
+                        android:textColor="?attr/colorOnSurface" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/space_md"
+                        android:text="@string/sensitivity_description"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/textSensitivityLevel"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:textAppearance="?attr/textAppearanceBodyMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant"
+                            tools:text="Livello: Medio" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:id="@+id/textSensitivityValue"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textAppearance="?attr/textAppearanceTitleLarge"
+                            android:textColor="?attr/colorOnSurface"
+                            tools:text="60%" />
+                    </LinearLayout>
+
+                    <com.google.android.material.slider.Slider
+                        android:id="@+id/sliderSensitivity"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:valueFrom="0"
+                        android:valueTo="100"
+                        android:stepSize="5"
+                        android:value="60"
+                        android:contentDescription="@string/sensitivity_slider_default_content_description" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textSensitivityHint"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Soglia shake: 2.08 g" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/space_md"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/weekly_schedule_title"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textColor="?attr/colorOnSurface" />
+
+                        <com.google.android.material.materialswitch.MaterialSwitch
+                            android:id="@+id/switchWeeklySchedule"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:contentDescription="@string/weekly_schedule_switch_content_description" />
+                    </LinearLayout>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:layout_marginBottom="@dimen/space_sm"
+                        android:text="@string/weekly_schedule_description"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <com.google.android.material.chip.ChipGroup
+                        android:id="@+id/chipGroupWeekDays"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        app:chipSpacingHorizontal="@dimen/space_xs"
+                        app:chipSpacingVertical="@dimen/space_xs"
+                        app:singleSelection="false">
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipMonday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_monday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipTuesday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_tuesday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipWednesday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_wednesday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipThursday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_thursday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipFriday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_friday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSaturday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_saturday" />
+
+                        <com.google.android.material.chip.Chip
+                            android:id="@+id/chipSunday"
+                            style="@style/Widget.Material3.Chip.Filter"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:checkable="true"
+                            android:text="@string/day_short_sunday" />
+                    </com.google.android.material.chip.ChipGroup>
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_sm"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonScheduleStartTime"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/weekly_schedule_start_time_label"
+                            android:textAllCaps="false" />
+
+                        <com.google.android.material.textview.MaterialTextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="@dimen/space_xs"
+                            android:layout_marginEnd="@dimen/space_xs"
+                            android:text="→"
+                            android:textAppearance="?attr/textAppearanceTitleMedium"
+                            android:textColor="?attr/colorOnSurfaceVariant" />
+
+                        <com.google.android.material.button.MaterialButton
+                            android:id="@+id/buttonScheduleEndTime"
+                            style="@style/Widget.Material3.Button.OutlinedButton"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="@string/weekly_schedule_end_time_label"
+                            android:textAllCaps="false" />
+                    </LinearLayout>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textWeeklyScheduleSummary"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_sm"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Lun, Mar, Mer · 08:00 → 22:00" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
+
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardServiceStatus"
+                style="@style/Widget.Material3.CardView.Filled"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="@dimen/space_md">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textServiceStatusTitle"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:text="@string/service_status_title"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/textServiceStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Servizio non attivo"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:accessibilityLiveRegion="polite"
+                        android:text="@string/service_status_stopped"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold" />
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card stato flash -->
             <com.google.android.material.card.MaterialCardView
                 android:id="@+id/cardFlashStatus"
+                style="@style/Widget.Material3.CardView.Filled"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                style="@style/Widget.Material3.CardView.Filled">
+                android:layout_marginBottom="@dimen/space_md">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/space_md">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textFlashStatusTitle"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Stato del Flash"
+                        android:layout_marginBottom="@dimen/space_xs"
+                        android:text="@string/flash_status_title"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="8dp" />
+                        android:textColor="?attr/colorOnSurface" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:id="@+id/textFlashStatus"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="Flash LED: SPENTO"
-                        android:textAppearance="?attr/textAppearanceBodyLarge"
+                        android:accessibilityLiveRegion="polite"
+                        android:text="@string/flash_status_off"
+                        android:textAppearance="?attr/textAppearanceTitleLarge"
                         android:textColor="?attr/colorOnSurface"
                         android:textStyle="bold" />
-
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
-            <!-- Card istruzioni -->
             <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="12dp"
-                app:cardElevation="2dp"
-                app:strokeWidth="1dp"
+                android:layout_marginBottom="@dimen/space_md"
                 app:strokeColor="?attr/colorOutline"
-                style="@style/Widget.Material3.CardView.Outlined">
+                app:strokeWidth="1dp">
 
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:padding="16dp">
+                    android:padding="@dimen/space_md">
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="💡 Come usare l'app"
+                        android:layout_marginBottom="@dimen/space_sm"
+                        android:text="@string/instructions_title"
                         android:textAppearance="?attr/textAppearanceTitleMedium"
-                        android:textColor="?attr/colorOnSurface"
-                        android:layout_marginBottom="12dp" />
+                        android:textColor="?attr/colorOnSurface" />
 
-                    <TextView
+                    <com.google.android.material.textview.MaterialTextView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:text="1. Attiva il servizio con lo switch sopra\n2. Agita il dispositivo per accendere/spegnere il flash\n3. Il servizio funziona anche con schermo spento\n4. Riceverai una vibrazione ad ogni agitazione rilevata\n5. Disabilita le ottimizzazioni della batteria per l'app"
+                        android:lineSpacingExtra="2dp"
+                        android:text="@string/instructions_body"
                         android:textAppearance="?attr/textAppearanceBodyMedium"
-                        android:textColor="?attr/colorOnSurfaceVariant"
-                        android:lineSpacingMultiplier="1.2" />
-
+                        android:textColor="?attr/colorOnSurfaceVariant" />
                 </LinearLayout>
-
             </com.google.android.material.card.MaterialCardView>
 
+            <com.google.android.material.card.MaterialCardView
+                style="@style/Widget.Material3.CardView.Outlined"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:strokeColor="?attr/colorOutline"
+                app:strokeWidth="1dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="@dimen/space_md">
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="@string/language_section_title"
+                        android:textAppearance="?attr/textAppearanceTitleMedium"
+                        android:textColor="?attr/colorOnSurface" />
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_xs"
+                        android:layout_marginBottom="@dimen/space_sm"
+                        android:text="@string/language_section_description"
+                        android:textAppearance="?attr/textAppearanceBodyMedium"
+                        android:textColor="?attr/colorOnSurfaceVariant" />
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fillViewport="false"
+                        android:scrollbars="none">
+
+                        <com.google.android.material.button.MaterialButtonToggleGroup
+                            android:id="@+id/toggleLanguageFlags"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            app:selectionRequired="true"
+                            app:singleSelection="true">
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangIt"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_it_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇮🇹 IT"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangEn"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_en_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇬🇧 EN"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangFr"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_fr_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇫🇷 FR"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangEs"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_es_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇪🇸 ES"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangPt"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_pt_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇵🇹 PT"
+                                android:textAllCaps="false" />
+
+                            <com.google.android.material.button.MaterialButton
+                                android:id="@+id/buttonLangDe"
+                                style="@style/Widget.Material3.Button.OutlinedButton"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:checkable="true"
+                                android:contentDescription="@string/language_toggle_de_content_description"
+                                android:minWidth="0dp"
+                                android:paddingStart="@dimen/space_xs"
+                                android:paddingEnd="@dimen/space_xs"
+                                android:text="🇩🇪 DE"
+                                android:textAllCaps="false" />
+                        </com.google.android.material.button.MaterialButtonToggleGroup>
+                    </HorizontalScrollView>
+
+                    <com.google.android.material.textview.MaterialTextView
+                        android:id="@+id/textActiveLanguage"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="@dimen/space_sm"
+                        android:textAppearance="?attr/textAppearanceBodySmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="Lingua attiva: Italiano" />
+                </LinearLayout>
+            </com.google.android.material.card.MaterialCardView>
         </LinearLayout>
-
-    </ScrollView>
-
+    </androidx.core.widget.NestedScrollView>
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -6,23 +6,20 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.util.Log
-import kotlin.math.sqrt
 
 class ShakeDetector(private val listener: OnShakeListener) : SensorEventListener {
 
     companion object {
         private const val TAG = "ShakeDetector"
-        private const val SHAKE_THRESHOLD = 60.0f // Soglia di accelerazione per rilevare l'agitazione
-        private const val SHAKE_WAIT_TIME_MS = 1500 // Tempo di attesa tra rilevamenti (debounce)
     }
 
     interface OnShakeListener {
         fun onShake()
     }
+    private val signalProcessor = ShakeSignalProcessor()
 
     private var sensorManager: SensorManager? = null
     private var accelerometer: Sensor? = null
-    private var lastShakeTime = 0L
 
     fun start(context: Context) {
         sensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
@@ -40,32 +37,38 @@ class ShakeDetector(private val listener: OnShakeListener) : SensorEventListener
         sensorManager?.unregisterListener(this)
         sensorManager = null
         accelerometer = null
+        signalProcessor.reset()
         Log.d(TAG, "ShakeDetector fermato")
     }
 
+    fun setSensitivityPercent(sensitivityPercent: Float) {
+        val thresholdG = ShakeSensitivitySettings.thresholdForSensitivityPercent(sensitivityPercent)
+        signalProcessor.updateThresholdG(thresholdG)
+        Log.d(TAG, "Sensibilità aggiornata: $sensitivityPercent% (thresholdG=$thresholdG)")
+    }
+
     override fun onSensorChanged(event: SensorEvent?) {
-        event?.let {
-            if (it.sensor.type == Sensor.TYPE_ACCELEROMETER) {
-                // Calcola l'accelerazione totale
-                val x = it.values[0]
-                val y = it.values[1]
-                val z = it.values[2]
+        val sensorEvent = event ?: return
+        if (sensorEvent.sensor.type != Sensor.TYPE_ACCELEROMETER) return
 
-                val acceleration = sqrt(x * x + y * y + z * z) - SensorManager.GRAVITY_EARTH
+        val shouldTrigger = signalProcessor.onSample(
+            timestampMs = sensorTimestampToMillis(sensorEvent.timestamp),
+            x = sensorEvent.values[0],
+            y = sensorEvent.values[1],
+            z = sensorEvent.values[2]
+        )
 
-                // Verifica se supera la soglia e rispetta il debounce
-                if (acceleration > SHAKE_THRESHOLD) {
-                    val currentTime = System.currentTimeMillis()
-                    if (currentTime - lastShakeTime > SHAKE_WAIT_TIME_MS) {
-                        lastShakeTime = currentTime
-                        listener.onShake()
-                    }
-                }
-            }
+        if (shouldTrigger) {
+            listener.onShake()
         }
     }
 
     override fun onAccuracyChanged(sensor: Sensor?, accuracy: Int) {
         // Non necessario per questo caso d'uso
+    }
+
+    private fun sensorTimestampToMillis(sensorTimestampNs: Long): Long {
+        // Why: SensorEvent timestamp is monotonic (not wall-clock), perfect for gesture timing.
+        return sensorTimestampNs / 1_000_000L
     }
 }

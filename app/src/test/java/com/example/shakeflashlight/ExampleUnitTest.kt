@@ -1,17 +1,26 @@
 package com.example.shakeflashlight
 
+import org.junit.Assert.assertFalse
+import org.junit.Assert.assertTrue
 import org.junit.Test
 
-import org.junit.Assert.*
-
-/**
- * Example local unit test, which will execute on the development machine (host).
- *
- * See [testing documentation](http://d.android.com/tools/testing).
- */
 class ExampleUnitTest {
+
     @Test
-    fun addition_isCorrect() {
-        assertEquals(4, 2 + 2)
+    fun processorResetAllowsFreshGestureCycle() {
+        val processor = ShakeSignalProcessor(
+            thresholdG = 2.0f,
+            minPeakCount = 2,
+            peakWindowMs = 500L,
+            cooldownMs = 5_000L
+        )
+
+        assertFalse(processor.onSample(timestampMs = 100L, x = 0f, y = 0f, z = 30f))
+        assertTrue(processor.onSample(timestampMs = 300L, x = 0f, y = 0f, z = 30f))
+
+        processor.reset()
+
+        assertFalse(processor.onSample(timestampMs = 320L, x = 0f, y = 0f, z = 30f))
+        assertTrue(processor.onSample(timestampMs = 500L, x = 0f, y = 0f, z = 30f))
     }
 }

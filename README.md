@@ -153,12 +153,6 @@ Use [**Feature Request Template**](https://github.com/Ang3l00/ShakeFlashlight/is
 - **💬 Discussions**: [GitHub Discussions](https://github.com/Ang3l00/ShakeFlashlight/discussions)
 
 ## 🗺️ Roadmap & Future Developments
-- [ ] 🎨 **UI refresh** with full Material Design 3
-- [ ] ⚙️ **Settings page** for advanced configuration
-- [ ] 🌐 **Multi-language support** (EN, IT, ES, FR, DE)
-- [ ] 🔊 **Vibration feedback** configurable
-- [ ] 📊 **Advanced shake sensitivity** with configuration slider
-- [ ] ⏰ **Auto timer** Weekly schedule for automatic app activation
 - [ ] 🔋 **Battery optimization** Code improvements to reduce battery impact
 
 ## 🏆 Contributors & Acknowledgements
